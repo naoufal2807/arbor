@@ -1,6 +1,6 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/arbor-logo-dark.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="assets/arbor-logo-dark.png">
     <img src="assets/arbor-logo-full.svg" alt="Arbor — route inference intelligently" width="440">
   </picture>
 </p>
