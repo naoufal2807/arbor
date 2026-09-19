@@ -52,6 +52,7 @@ SCORERS = {
 }
 
 
+
 def select(
     specs: list[BackendSpec],
     stats: dict[str, BackendStats],
@@ -63,14 +64,17 @@ def select(
 
     excluded: dict[str, str] = {}
     candidates: list[BackendSpec] = []
+    effective_stats: dict[str, BackendStats] = {}
 
     # --- PHASE 1: filter — keep reasons for every exclusion ---
     for spec in specs:
         st = stats.get(spec.name)
 
         if st is None:
-            excluded[spec.name] = "no stats"
-            continue
+            #excluded[spec.name] = "no stats" deprecated to fix the cold start problem
+            st = BackendStats() 
+        effective_stats[spec.name] = st
+
         if not st.healthy:
             excluded[spec.name] = "unhealthy"
             continue
@@ -88,7 +92,8 @@ def select(
 
     # --- PHASE 2: score + rank ---
     scorer = SCORERS[strategy]
-    ranked = sorted(candidates, key=lambda s: (scorer(s, stats[s.name]), s.priority, s.name))
+    print("this is : f{candidates}")
+    ranked = sorted(candidates, key=lambda s: (scorer(s, effective_stats[s.name]), s.priority, s.name))
 
     return RoutingDecision(
         winner=ranked[0].name,
