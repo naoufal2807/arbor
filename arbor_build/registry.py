@@ -7,4 +7,4 @@ class BackendSpec:
     name: str
     cost_per_1m_tokens: float
     context_window: int
-    priority: int    #tiebreaker: lower number = higher priority
+    priority: int  = 0  #tiebreaker: lower number = higher priority

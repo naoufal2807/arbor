@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "arbor-build"
+name = "arbor_build"
 version = "0.1.0"
 description = "Open-source inference gateway. Route LLM requests intelligently."
 readme = "README.md"
@@ -31,7 +31,7 @@ dev = [
 ]
 
 [tool.setuptools]
-packages = ["arbor-build"]
+packages = ["arbor_build"]
 
 [tool.black]
 line-length = 100
