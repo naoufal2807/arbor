@@ -11,4 +11,6 @@ arbor_build.egg-info/SOURCES.txt
 arbor_build.egg-info/dependency_links.txt
 arbor_build.egg-info/requires.txt
 arbor_build.egg-info/top_level.txt
+tests/test_backend_ollama.py
+tests/test_ollama.py
 tests/test_router.py

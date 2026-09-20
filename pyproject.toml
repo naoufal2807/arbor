@@ -19,6 +19,7 @@ dependencies = [
     "httpx>=0.25.0",
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
+    "ollama>=0.3.0",
 ]
 
 [project.optional-dependencies]
@@ -36,6 +37,9 @@ packages = ["arbor_build"]
 [tool.black]
 line-length = 100
 target-version = ['py39']
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
 
 [tool.ruff]
 line-length = 100
