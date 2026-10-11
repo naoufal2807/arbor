@@ -9,11 +9,26 @@ class OllamaBackend(Backend):
     def __init__(self, model: str = "gemma 2", host: str = "http://localhost:11434"):
         super().__init__(name="ollama")
         self.model = model
-        self.client = AsyncClient(host=host)
+        self.client = AsyncClient(host=host)   
+# Failling output
+class BackendErrorOutput(Exception):
+    "Raised when the backend fails to produce a valid output"
+    def __init__(self, backend: str, done_reason: str, content: str):
+        self.backend = backend
+        self.done_reason = done_reason
+        self.content = content
+        super().__init__(f"{backend} : unsuable output (done_reason={done_reason!r})")
     # chat 
     async def chat(self, messages: list[dict]) -> dict:
         """send messages, return a complete response in a common shape"""
         response = await self.client.chat(model=self.model, messages=messages)
+        if not response.message.content.strip() or response.done_reason != "stop":
+            raise BackendErrorOutput(
+                backend=self.name,
+                done_reason=response.done_reason,
+                content=response.message.content,
+            )
+        
         return {
             "content": response.message.content,
             "usage": {
