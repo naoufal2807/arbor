@@ -1,34 +1,31 @@
-# stats model
-from dataclasses import dataclass 
+"""In-memory stats store for backend health and latency."""
 from collections import deque
+from dataclasses import dataclass
+import statistics
+
 
 @dataclass
 class BackendStats:
     healthy: bool = True
     p95_ttft_ms: float | None = None
-    
-    
+
+
 class StatsStore:
-    def __init__(self, window: int = 100, failure_threshold: int = 5):
-        self._stats: dict[str, deque[tuple[float, bool]]] = {}
+    def __init__(self, window: int = 20):
         self._window = window
-        self._failure_threshold = failure_threshold
-    
-    def record_results(self, backend: str, ttft_ms: float, ok: bool) -> None:
-        # record the results of a request to a backend
-        if backend not in self._stats:
-            self._stats[backend] = deque(maxlen=self._window)
-        self._stats[backend].append((ttft_ms, ok))
-    
-    def snapshot(self) -> dict[str, BackendStats]:
-        results = {}
-        for backend, samples in self._stats.items():
-            latencies = sorted(t for t,ok in samples if ok)
-            failures = sum( not ok  for _,ok in samples)
-            
-            p95 = latencies[int(0.95 * (len(latencies) - 1))] if latencies else None
-            healthy = failures < self._failure_threshold
-            
-            
-            results[backend] = BackendStats(healthy=healthy, p95_ttft_ms=p95)
-        return results
+        self._history: dict[str, deque] = {}
+
+    def record_result(self, name: str, ttft_ms: float, ok: bool) -> None:
+        if name not in self._history:
+            self._history[name] = deque(maxlen=self._window)
+        self._history[name].append((ttft_ms, ok))
+
+    def snapshot(self, name: str) -> BackendStats:
+        hist = self._history.get(name)
+        if not hist:
+            return BackendStats()  # cold start
+
+        healthy = hist[-1][1]  # simple rule: last call decides
+        latencies = [ttft for ttft, ok in hist if ok]
+        p95 = statistics.quantiles(latencies, n=100)[94] if len(latencies) >= 2 else None
+        return BackendStats(healthy=healthy, p95_ttft_ms=p95)
