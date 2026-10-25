@@ -2,7 +2,7 @@
 from ollama import AsyncClient
 from .backend import Backend
 from typing import AsyncGenerator
-from errors import BackendOutputError
+from .errors import BackendOutputError
 
 class OllamaBackend(Backend):
     def __init__(self, model: str = "gemma2", host: str = "http://localhost:11434"):
@@ -15,10 +15,10 @@ class OllamaBackend(Backend):
         response = await self.client.chat(model=self.model, messages=messages)
 
         # DEBUG: remove once the 'length' failure is understood
-        print("DEBUG done_reason:", response.done_reason)
-        print("DEBUG content:", repr(response.message.content))
-        print("DEBUG eval_count:", response.eval_count)
-        print("DEBUG thinking:", getattr(response.message, "thinking", None))
+        #print("DEBUG done_reason:", response.done_reason)
+        #print("DEBUG content:", repr(response.message.content))
+        #print("DEBUG eval_count:", response.eval_count)
+        #print("DEBUG thinking:", getattr(response.message, "thinking", None))
 
         if not response.message.content.strip() or response.done_reason != "stop":
             raise BackendOutputError(

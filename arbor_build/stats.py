@@ -29,3 +29,8 @@ class StatsStore:
         latencies = [ttft for ttft, ok in hist if ok]
         p95 = statistics.quantiles(latencies, n=100)[94] if len(latencies) >= 2 else None
         return BackendStats(healthy=healthy, p95_ttft_ms=p95)
+    
+    # ARB-2 : stats store expect a dict of backends
+    def snapshot_all(self) -> dict[str, BackendStats]:
+        return {name: self.snapshot(name) for name in self._history.keys()}
+    

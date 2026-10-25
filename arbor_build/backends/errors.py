@@ -1,5 +1,4 @@
-
-
+"""error classes  for backend output"""
 class BackendOutputError(Exception):
     def __init__(self, backend: str, done_reason: str, content: str):
         self.backend = backend
